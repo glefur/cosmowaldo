@@ -8,7 +8,7 @@ const PORT = 3000;
 
 app.use(cors());
 
-app.use('/admin/game', gameRoutes);
+app.use('/api/admin/game', gameRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);
