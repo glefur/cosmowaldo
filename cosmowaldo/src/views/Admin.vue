@@ -15,15 +15,27 @@
   </BRow>
   <h2>Game sets</h2>
   <BRow>
-    <BDropdown text="Select Game Set">
-      <BDropdownItem
-        v-for="(gameset, index) in gameSetStore.gamesets"
-        :key="index"
-        @click="selectGameSet(gameset)"
-      >
-        {{ gameset.name }}
-      </BDropdownItem>
-    </BDropdown>
+    <BCol>
+      <BDropdown :text="selectedGameSet ? selectedGameSet.name : 'Select Game Set'">
+        <BDropdownItem
+          v-for="(gameset, index) in gameSetStore.gamesets"
+          :key="index"
+          @click="selectGameSet(gameset)"
+        >
+          {{ gameset.name }}
+        </BDropdownItem>
+      </BDropdown>
+    </BCol>
+    <BCol v-if="selectedGameSet">
+      <BDropdown text="Select Step">
+        <BDropdownItem
+          v-for="(step, index) in selectedGameSet.steps"
+          :key="index"
+        >
+          {{ step.mapPath }}
+        </BDropdownItem>
+      </BDropdown>
+    </BCol>
   </BRow>
 </template>
 
@@ -34,6 +46,7 @@ import GameAPI from '@/api/game.api';
 
 const status = ref(null);
 const gameSetStore = useGameSetStore();
+const selectedGameSet = ref(null);
 
 const start = async () => {
   await GameAPI.start();
@@ -46,7 +59,8 @@ const stop = async () => {
 };
 
 const selectGameSet = (gameset) => {
-  console.log('Selected GameSet:', gameset);
+  selectedGameSet.value = gameset;
+  gameSetStore.selectGameSet(gameset);
 };
 
 onMounted(async () => {

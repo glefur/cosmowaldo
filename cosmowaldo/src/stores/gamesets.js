@@ -4,6 +4,7 @@ import GameAPI from '@/api/game.api';
 export const useGameSetStore = defineStore('gameset', {
   state: () => ({
     gamesets: [],
+    selectedGameSet: null,
   }),
   actions: {
     async fetchGameSets() {
@@ -13,6 +14,9 @@ export const useGameSetStore = defineStore('gameset', {
         console.error(error);
         this.gamesets = [];
       }
+    },
+    selectGameSet(gameset) {
+      this.selectedGameSet = gameset;
     },
   },
 });
