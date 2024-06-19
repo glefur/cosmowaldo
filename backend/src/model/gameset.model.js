@@ -31,6 +31,7 @@ class Step {
 
 class GameSet {
   constructor() {
+    this.name = null;
     this.steps = []; // Liste des étapes
   }
 

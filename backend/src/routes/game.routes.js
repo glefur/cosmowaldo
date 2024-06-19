@@ -23,4 +23,9 @@ router.get('/running', (req, res) => {
     res.send({ running: gameService.running() });
 });
 
+
+router.get('/availableSets', (req, res) => {
+  res.send(gameService.availableSets());
+});
+
 export default router;

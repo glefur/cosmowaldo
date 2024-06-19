@@ -16,4 +16,9 @@ export default {
         const result = await api.post('/admin/game/stop');
         return;
     },
+
+    availableSets: async () => {
+      const response = await api.get('/admin/game/availablesets');
+      return response.data;
+    }  
 }
