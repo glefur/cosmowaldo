@@ -1,5 +1,5 @@
 <template>
-  <div class="scene" :style="backgroundStyle">
+  <div class="scene" :style="backgroundStyle" style="background-size: 100% 100%">
     <div v-for="(avatar, index) in step.avatarMatrix" :key="index">
       <Avatar
         v-for="(coord, coordIndex) in avatar.coordinates"
@@ -10,7 +10,6 @@
     </div>
   </div>
 </template>
-
 
 <script setup>
 import { computed } from 'vue';
@@ -25,15 +24,17 @@ const props = defineProps({
 
 const backgroundStyle = computed(() => ({
   backgroundImage: `url(http://localhost:3000${props.step.mapPath})`,
-  backgroundSize: 'cover',
   backgroundPosition: 'center',
   width: '100%',
-  height: '100vh' // ajustez selon vos besoins
+  height: '100vh' // Ajustez selon vos besoins
 }));
 </script>
 
 <style scoped>
 .scene {
   position: relative;
+  width: 100%;
+  height: 100vh; 
+  background-position: center;
 }
 </style>
