@@ -2,23 +2,23 @@ import { Step } from '../model/gameset.model.js';
 
 const getRandomCoordinate = () => Math.random();
 
-const getRandomCoordinates = (count) => {
+const getRandomCoordinates = (minCount, maxCount) => {
   const coordinates = [];
+  const count = minCount + Math.floor(Math.random() * (maxCount - minCount + 1)); // Générer un nombre aléatoire entre minCount et maxCount
   for (let i = 0; i < count; i++) {
     coordinates.push({ x: getRandomCoordinate(), y: getRandomCoordinate() });
   }
   return coordinates;
 }
 
-export const initializeStep = (mapPath, targetAvatarPath, otherAvatarPaths) => {
+export const initializeStep = (mapPath, targetAvatarPath, otherAvatarPaths, minInstances, maxInstances) => {
   // Générer une coordonnée aléatoire pour l'avatar à chercher
   const targetAvatarCoordinates = [{ x: getRandomCoordinate(), y: getRandomCoordinate() }];
 
   // Générer des coordonnées aléatoires pour les autres avatars
   const avatarMatrix = [];
   for (const avatarPath of otherAvatarPaths) {
-    const coordinatesCount = Math.floor(Math.random() * 10) + 1; // Nombre aléatoire de coordonnées
-    const coordinates = getRandomCoordinates(coordinatesCount);
+    const coordinates = getRandomCoordinates(minInstances, maxInstances); // Générer entre minInstances et maxInstances coordonnées
     avatarMatrix.push({ avatarPath, coordinates });
   }
 
