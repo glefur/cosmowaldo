@@ -42,7 +42,7 @@
       </BCol>
     </BRow>
     <BRow v-if="selectedStep">
-      <Scene :step="selectedStep" />
+      <Scene :step="selectedStep" mode="game"/>
     </BRow>
   </div>
 </template>
