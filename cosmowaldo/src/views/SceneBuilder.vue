@@ -1,95 +1,131 @@
 <template>
   <div>
-    <h1>Scene Builder</h1>
-    <div class="builder-form">
-      <BForm @submit.prevent="submitForm">
-       <BFormGroup
-          id="map-path-group"
-          label="Map:"
-          label-for="mapPath"
-          class="field-group"
-        >
-          <BFormInput
-            id="mapPath"
-            v-model="mapPath"
-            type="text"
-            placeholder="Enter map url"
-            required
-          />
-        </BFormGroup>
-        <BFormGroup
-          id="desired-avatar-group"
-          label="Desired avatar:"
-          label-for="targetAvatarPath"
-          class="field-group"
-        >
-          <BFormInput
-            id="mapPath"
-            v-model="targetAvatarPath"
-            type="text"
-            placeholder="Enter avatar url"
-            required
-          />
-        </BFormGroup>
-        <div class="flex-container">
+    <h1>GameSet Manager</h1>
+    <BTabs content-class="mt-3">
+      <BTab title="Builder">
+        <div class="builder-form">
+          <BForm @submit.prevent="submitForm">
           <BFormGroup
-            id="min-instances-group"
-            label="Minimal Number of Instances:"
-            label-for="minInstances"
-            class="flex-item"
-          >
-            <BFormSpinbutton 
-              id="minInstances" 
-              v-model="minInstances"
-              required/>
-          </BFormGroup>
-          <BFormGroup
-            id="max-instances-group"
-            label="Maximum Number of Instances:"
-            label-for="maxInstances"
-            class="flex-item"
-          >
-            <BFormSpinbutton 
-              id="maxInstances" 
-              v-model="maxInstances"
-              required/>
-          </BFormGroup>
-        </div>
-        <div>
-          <div class="header-container">
-            <span class="h3">Additional Avatars</span>
-            <BButton variant="primary" @click="addAvatar" class="right-button" size="sm">Add Avatar</BButton>
-          </div>
-          <div v-for="(avatar, index) in otherAvatarPaths" :key="index">
-            <BInputGroup>
+              id="map-path-group"
+              label="Map:"
+              label-for="mapPath"
+              class="field-group"
+            >
               <BFormInput
-                v-model="otherAvatarPaths[index]"
+                id="mapPath"
+                v-model="mapPath"
                 type="text"
-                placeholder="Avatar URL"
-                  required
-                />
-              <template #append>
-                <BButton variant="danger" @click="removeAvatar(index)">Remove</BButton>
-              </template>
-            </BInputGroup>
-          </div>
+                placeholder="Enter map url"
+                required
+              />
+            </BFormGroup>
+            <BFormGroup
+              id="desired-avatar-group"
+              label="Desired avatar:"
+              label-for="targetAvatarPath"
+              class="field-group"
+            >
+              <BFormInput
+                id="mapPath"
+                v-model="targetAvatarPath"
+                type="text"
+                placeholder="Enter avatar url"
+                required
+              />
+            </BFormGroup>
+            <div class="flex-container">
+              <BFormGroup
+                id="min-instances-group"
+                label="Minimal Number of Instances:"
+                label-for="minInstances"
+                class="flex-item"
+              >
+                <BFormSpinbutton 
+                  id="minInstances" 
+                  v-model="minInstances"
+                  required/>
+              </BFormGroup>
+              <BFormGroup
+                id="max-instances-group"
+                label="Maximum Number of Instances:"
+                label-for="maxInstances"
+                class="flex-item"
+              >
+                <BFormSpinbutton 
+                  id="maxInstances" 
+                  v-model="maxInstances"
+                  required/>
+              </BFormGroup>
+            </div>
+            <div>
+              <div class="header-container">
+                <span class="h3">Additional Avatars</span>
+                <BButton variant="primary" @click="addAvatar" class="right-button" size="sm">Add Avatar</BButton>
+              </div>
+              <div v-for="(avatar, index) in otherAvatarPaths" :key="index">
+                <BInputGroup>
+                  <BFormInput
+                    v-model="otherAvatarPaths[index]"
+                    type="text"
+                    placeholder="Avatar URL"
+                      required
+                    />
+                  <template #append>
+                    <BButton variant="danger" @click="removeAvatar(index)">Remove</BButton>
+                  </template>
+                </BInputGroup>
+              </div>
+            </div>
+            <BButton variant="primary" type="submit" class="center-button">Submit</BButton>
+          </BForm>
         </div>
-        <BButton variant="primary" type="submit" class="center-button">Submit</BButton>
-      </BForm>
-    </div>
-    <div v-if="step">
-      <h2>Generated Step</h2>
-      <Scene :step="step" style="margin-bottom: 60px;"/>
-      <BButton variant="success" @click="copyToClipboard" class="center-button">Copy JSON to Clipboard</BButton>
-    </div>
+        <div v-if="step">
+          <h2>Generated Step</h2>
+          <Scene :step="step" style="margin-bottom: 60px;"/>
+          <BButton variant="success" @click="copyToClipboard" class="center-button">Copy JSON to Clipboard</BButton>
+        </div>
+      </BTab>
+      <BTab title="Viewer">
+        <BRow>
+            <BCol>
+              <BDropdown :text="selectedGameSet ? selectedGameSet.name : 'Select Game Set'">
+                <BDropdownItem
+                  v-for="(gameset, index) in gameSetStore.gamesets"
+                  :key="index"
+                  @click="selectGameSet(gameset)"
+                >
+                  {{ gameset.name }}
+                </BDropdownItem>
+              </BDropdown>
+            </BCol>
+            <BCol v-if="selectedGameSet">
+              <BDropdown text="Select Step">
+                <BDropdownItem
+                  v-for="(step, index) in selectedGameSet.steps"
+                  :key="index"
+                  @click="selectStep(step)"
+                >
+                  {{ step.mapPath }}
+                </BDropdownItem>
+              </BDropdown>
+            </BCol>
+          </BRow>
+          <BRow v-if="selectedStep">
+            <Scene :step="selectedStep" mode="game"/>
+          </BRow>
+      </BTab>
+    </BTabs>
+
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useGameSetStore } from '@/stores/gamesets';
 import SetupAPI from '@/api/setup.api.js';
 import Scene from '@/components/Scene.vue';
 
+// For builder
 const mapPath = ref('');
 const targetAvatarPath = ref('');
 const otherAvatarPaths = ref(['']);
@@ -129,6 +165,28 @@ const copyToClipboard = () => {
     });
   }
 };
+
+// For viewer
+const gameSetStore = useGameSetStore();
+const selectedGameSet = ref(null);
+const selectedStep = ref(null);
+
+const selectGameSet = (gameset) => {
+  selectedGameSet.value = gameset;
+  gameSetStore.selectGameSet(gameset);
+};
+
+const selectStep = (step) => {
+  selectedStep.value = step;
+};
+
+onMounted(async () => {
+  try {
+    await gameSetStore.fetchGameSets();
+  } catch (error) {
+    console.error(error);
+  }
+});
 </script>
 
 <style scoped>
