@@ -6,7 +6,7 @@
     @mouseleave="handleMouseLeave" 
     @click="handleClick"
     :class="{ active: isActive }">
-    <div v-if="showCross" class="cross-icon" :class="{ 'fade-out': !showCross }">
+    <div v-show="showCross" class="cross-icon" :class="{ 'fade-out': !showCrossVisible }">
       <i-fa-times style="color: #ff0000" />
     </div>
   </div>
@@ -41,6 +41,7 @@ const props = defineProps({
 const emit = defineEmits(['mousemove', 'mouseleave', 'click']);
 
 const showCross = ref(false);
+const showCrossVisible = ref(false);
 
 const avatarStyle = computed(() => {
   let size = 50;
@@ -79,13 +80,13 @@ const handleClick = () => {
       emit('click', true); // Player clicked on the correct avatar
     } else {
       showCross.value = true;
+      showCrossVisible.value = true;
+      setTimeout(() => {
+        showCrossVisible.value = false;
+      }, 1000); // Fade out after 1 second
       setTimeout(() => {
         showCross.value = false;
-      }, 1000); // Show the cross for 1 second before starting the fade out
-      setTimeout(() => {
-        // Remove the cross after the fade-out transition
-        showCross.value = false;
-      }, 3000); // Show and fade out the cross for a total of 3 seconds
+      }, 3000); // Remove from DOM after 3 seconds
       emit('click', false); // Player clicked on the wrong avatar
     }
   }
@@ -112,7 +113,7 @@ const handleClick = () => {
   transform: translate(-50%, -50%);
   font-size: 24px;
   opacity: 1;
-  transition: opacity 5s ease-out; /* Transition plus longue pour un fade out progressif */
+  transition: opacity 2s ease-out; /* Transition plus longue pour un fade out progressif */
 }
 
 .cross-icon.fade-out {
