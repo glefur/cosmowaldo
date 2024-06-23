@@ -6,13 +6,15 @@
         :key="coordIndex"
         :avatarPath="avatar.avatarPath"
         :coordinates="coord"
-        :mode="props.mode"
+        :mode="currentMode"
         :isActive="isAvatarActive(index, coordIndex)"
+        :isTarget="isTargetAvatar(index, coordIndex)"
         @mousemove="(event) => handleAvatarMouseMove(event, index, coordIndex)"
         @mouseleave="handleAvatarMouseLeave"
+        @click="handleAvatarClick"
       />
     </div>
-    <div v-if="props.mode === 'reveal'" class="overlay">
+    <div v-if="currentMode === 'reveal'" class="overlay">
       <div v-if="targetAvatar" class="spotlight" :style="spotlightStyle"></div>
     </div>
   </div>
@@ -32,6 +34,8 @@ const props = defineProps({
     default: 'display'
   }
 });
+
+const currentMode = ref(props.mode);
 
 const backgroundStyle = computed(() => ({
   backgroundImage: `url(http://localhost:3000${props.step.mapPath})`,
@@ -64,14 +68,18 @@ const spotlightStyle = computed(() => {
 });
 
 const isAvatarActive = (index, coordIndex) => {
-  if (props.mode === 'reveal' && targetAvatar.value) {
+  if (currentMode.value === 'reveal' && targetAvatar.value) {
     return targetAvatar.value.index === index && coordIndex === 0;
   }
   return activeAvatar.value.index === index && activeAvatar.value.coordIndex === coordIndex;
 };
 
+const isTargetAvatar = (index, coordIndex) => {
+  return targetAvatar.value && targetAvatar.value.index === index && coordIndex === 0;
+};
+
 const handleMouseMove = (event) => {
-  if (props.mode === 'game') {
+  if (currentMode.value === 'game') {
     const { clientX, clientY } = event;
     let closestAvatar = null;
     let closestDistance = Infinity;
@@ -93,7 +101,7 @@ const handleMouseMove = (event) => {
 };
 
 const handleMouseLeave = () => {
-  if (props.mode === 'game') {
+  if (currentMode.value === 'game') {
     activeAvatar.value = { index: null, coordIndex: null };
   }
 };
@@ -104,6 +112,14 @@ const handleAvatarMouseMove = (event, index, coordIndex) => {
 
 const handleAvatarMouseLeave = () => {
   activeAvatar.value = { index: null, coordIndex: null };
+};
+
+const handleAvatarClick = (isCorrect) => {
+  if (currentMode.value === 'game') {
+    if (isCorrect) {
+      currentMode.value = 'reveal';
+    }
+  }
 };
 </script>
 
