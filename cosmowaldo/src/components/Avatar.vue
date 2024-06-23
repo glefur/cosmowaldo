@@ -14,6 +14,7 @@
 
 <script setup>
 import { computed, defineProps, defineEmits, ref } from 'vue';
+import { calculateAvatarPosition } from '../utils/position.js';
 
 const props = defineProps({
   avatarPath: {
@@ -35,6 +36,18 @@ const props = defineProps({
   isTarget: {
     type: Boolean,
     default: false
+  },
+  size: {
+    type: Number,
+    default: 50
+  },
+  sceneWidth: {
+    type: Number,
+    required: true
+  },
+  sceneHeight: {
+    type: Number,
+    required: true
   }
 });
 
@@ -44,20 +57,18 @@ const showCross = ref(false);
 const showCrossVisible = ref(false);
 
 const avatarStyle = computed(() => {
-  let size = 50;
-  if (props.isActive && props.mode === 'game') {
-    size *= 1.2; // Agrandir de 20% si actif et en mode jeu
-  }
+  const { top, left, size } = calculateAvatarPosition(props.coordinates, props.sceneWidth, props.sceneHeight, props.size, props.isActive, props.mode);
+
   return {
     backgroundImage: `url(http://localhost:3000${props.avatarPath})`,
     backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     position: 'absolute',
-    top: `calc(${props.coordinates.y * 100}% - ${size / 2}px)`,
-    left: `calc(${props.coordinates.x * 100}% - ${size / 2}px)`,
-    width: `${size}px`,
-    height: `${size}px`,
+    top: top,
+    left: left,
+    width: size,
+    height: size,
     zIndex: props.isActive ? 10 : 1 // Mettre au-dessus des autres si actif
   };
 });
@@ -98,11 +109,11 @@ const handleClick = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  transition: transform 0.2s, z-index 0.2s; /* Ajouter une transition pour l'agrandissement et le changement de z-index */
+  transition: transform 0.2s, z-index 0.2s, top 0.2s, left 0.2s; /* Ajouter une transition pour l'agrandissement et le changement de z-index */
 }
 
 .avatar.active {
-  transform: scale(1.2); /* Agrandir de 20% */
+  transform: scale(1.5); /* Agrandir de 50% */
   z-index: 10; /* Mettre au-dessus des autres */
 }
 

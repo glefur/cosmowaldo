@@ -1,5 +1,5 @@
 <template>
-  <div class="scene" :style="backgroundStyle" @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
+  <div class="scene" ref="sceneRef" :style="backgroundStyle" @mousemove="handleMouseMove" @mouseleave="handleMouseLeave">
     <div v-for="(avatar, index) in step.avatarMatrix" :key="index">
       <Avatar
         v-for="(coord, coordIndex) in avatar.coordinates"
@@ -9,6 +9,9 @@
         :mode="currentMode"
         :isActive="isAvatarActive(index, coordIndex)"
         :isTarget="isTargetAvatar(index, coordIndex)"
+        :size="avatarSize"
+        :sceneWidth="sceneWidth"
+        :sceneHeight="sceneHeight"
         @mousemove="(event) => handleAvatarMouseMove(event, index, coordIndex)"
         @mouseleave="handleAvatarMouseLeave"
         @click="handleAvatarClick"
@@ -21,8 +24,9 @@
 </template>
 
 <script setup>
-import { computed, ref, defineProps } from 'vue';
+import { computed, ref, defineProps, onMounted, nextTick } from 'vue';
 import Avatar from './Avatar.vue';
+import { calculateAvatarPosition } from '../utils/position.js';
 
 const props = defineProps({
   step: {
@@ -32,10 +36,32 @@ const props = defineProps({
   mode: {
     type: String,
     default: 'display'
+  },
+  avatarSize: {
+    type: Number,
+    default: 50
   }
 });
 
 const currentMode = ref(props.mode);
+
+const sceneRef = ref(null);
+const sceneWidth = ref(0);
+const sceneHeight = ref(0);
+
+const updateSceneDimensions = () => {
+  if (sceneRef.value) {
+    sceneWidth.value = sceneRef.value.offsetWidth;
+    sceneHeight.value = sceneRef.value.offsetHeight;
+  }
+};
+
+onMounted(() => {
+  nextTick(() => {
+    updateSceneDimensions();
+    window.addEventListener('resize', updateSceneDimensions);
+  });
+});
 
 const backgroundStyle = computed(() => ({
   backgroundImage: `url(http://localhost:3000${props.step.mapPath})`,
@@ -81,14 +107,18 @@ const isTargetAvatar = (index, coordIndex) => {
 const handleMouseMove = (event) => {
   if (currentMode.value === 'game') {
     const { clientX, clientY } = event;
+    const sceneRect = sceneRef.value.getBoundingClientRect();
+    const offsetX = clientX - sceneRect.left;
+    const offsetY = clientY - sceneRect.top;
     let closestAvatar = null;
     let closestDistance = Infinity;
 
     props.step.avatarMatrix.forEach((avatar, index) => {
       avatar.coordinates.forEach((coord, coordIndex) => {
-        const avatarX = coord.x * window.innerWidth;
-        const avatarY = coord.y * window.innerHeight;
-        const distance = Math.hypot(clientX - avatarX, clientY - avatarY);
+        const { top, left } = calculateAvatarPosition(coord, sceneWidth.value, sceneHeight.value, props.avatarSize, false, currentMode.value);
+        const avatarX = parseFloat(left);
+        const avatarY = parseFloat(top);
+        const distance = Math.hypot(offsetX - avatarX, offsetY - avatarY);
         if (distance < closestDistance) {
           closestDistance = distance;
           closestAvatar = { index, coordIndex };
