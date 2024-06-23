@@ -32,7 +32,9 @@ const loadAllGameSets = (directoryPath) => {
 
 
 let game = {
-    status: false
+    status: false,
+    activeSet: null,
+    activeStep: null
 };
 
 let gamesets = {
@@ -45,11 +47,21 @@ const start = () => {
 
 const stop = () => {
     game.status = false;
+    game.activeSet = null;
+    game.activeStep = null;
 };
 
 const running = () => game.status;
 
 const availableSets = () => gamesets.availableSets;
+
+const activeSet = () => game.activeSet;
+
+const setActiveSet = (gameSet) => game.activeSet = gameSet;
+
+const activeStep = () => game.activeStep;
+
+const setActiveStep = (step) => game.activeStep = step;
 
 // Etrange le chemin est relatif au server.js, pas a ce service
 loadAllGameSets('./data');
@@ -58,5 +70,9 @@ export default {
     start,
     stop,
     running,
-    availableSets
+    availableSets,
+    activeSet,
+    activeStep,
+    setActiveSet,
+    setActiveStep
 }
