@@ -44,14 +44,6 @@
             <p class="fw-lighter">{{ step.mapPath }}</p>
           </BListGroupItem>
         </BListGroup>
-
-
-    
-      </BCol>
-      <BCol >
-        <div class="form-check form-switch form-switch-xl" dir="ltr">
-          
-        </div>
       </BCol>
     </BRow>
   </div>
