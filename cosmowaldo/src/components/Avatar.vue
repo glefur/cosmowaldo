@@ -43,8 +43,8 @@ const avatarStyle = computed(() => {
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     position: 'absolute',
-    top: `${props.coordinates.y * 100}%`,
-    left: `${props.coordinates.x * 100}%`,
+    top: `calc(${props.coordinates.y * 100}% - ${size / 2}px)`,
+    left: `calc(${props.coordinates.x * 100}% - ${size / 2}px)`,
     width: `${size}px`,
     height: `${size}px`,
     zIndex: props.isActive ? 10 : 1 // Mettre au-dessus des autres si actif

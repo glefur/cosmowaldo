@@ -10,7 +10,6 @@
         :isActive="isAvatarActive(index, coordIndex)"
         @mousemove="(event) => handleAvatarMouseMove(event, index, coordIndex)"
         @mouseleave="handleAvatarMouseLeave"
-
       />
     </div>
   </div>

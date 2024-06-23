@@ -54,7 +54,16 @@ router.post('/activeSet', (req, res) => {
 
 router.get('/activeStep', (req, res) => {
   if (!gameService.running()) {
-    res.status(400).send({ message: 'Game is not running.' });
+    res.status(404).send({ message: 'Game is not running.' });
+    return;
+  }
+  if (!gameService.activeSet()) {
+    res.status(404).send({ message: 'GameSet hasn\'t be selected yet.' });
+    return;
+  }
+  if (!gameService.activeStep()) {
+    res.status(404).send({ message: 'Active step hasn\'t be selected yet.' });
+    return;
   }
   res.status(200).send(gameService.activeStep());
 });
