@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory } from 'vue-router'
+// src/router/index.js
+import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,7 +12,13 @@ const router = createRouter({
     {
       path: '/game',
       name: 'Game',
-      component: () => import('../views/Game.vue')
+      component: () => import('../views/Game.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: () => import('../views/Register.vue')
     },
     {
       path: '/admin',
@@ -24,6 +31,19 @@ const router = createRouter({
       component: () => import('../views/SceneBuilder.vue')
     }
   ]
-})
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    const player = localStorage.getItem('player');
+    if (!player) {
+      next({ name: 'Register' });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
+export default router;
