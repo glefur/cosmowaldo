@@ -11,10 +11,13 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@iconify/json": "^2.2.221",
+    "@iconify/vue": "^4.1.2",
     "axios": "^1.7.2",
     "bootstrap": "^5.3.3",
     "bootstrap-vue-next": "^0.21.2",
     "pinia": "^2.1.7",
+    "unplugin-icons": "^0.19.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },

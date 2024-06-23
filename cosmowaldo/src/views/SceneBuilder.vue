@@ -71,7 +71,7 @@
                       required
                     />
                   <template #append>
-                    <BButton variant="danger" @click="removeAvatar(index)">Remove</BButton>
+                    <BButton variant="danger" @click="removeAvatar(index)"><i-fa-times style="color: #ffffff" /></BButton>
                   </template>
                 </BInputGroup>
               </div>
@@ -122,6 +122,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useGameSetStore } from '@/stores/gamesets';
+
 import SetupAPI from '@/api/setup.api.js';
 import Scene from '@/components/Scene.vue';
 
