@@ -1,6 +1,6 @@
 import express from 'express';
 import gameService from '../services/game.service.js';
-import playerService from '../services/player.service.js';
+import userService from '../services/user.service.js';
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.post('/stop', (req, res) => {
         return;
     }
     gameService.stop();
-    playerService.clearPlayers();
+    userService.clearPlayers();
     res.status(200).end();
 });
 

@@ -2,11 +2,12 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
 import { Player } from "../model/player.model.js";
-import gameService from '../services/game.service.js';
+import gameService from './game.service.js';
 
 dotenv.config();
 
 let activePlayers = [];
+let adminTokens = [];
 
 const registerPlayer = (name) => {
   if (gameService.running()) {
@@ -47,10 +48,24 @@ const clearPlayers = () => {
   activePlayers = [];
 }
 
+const createAdmin = (password) => {
+  console.log(`${ password } == ${ process.env.ADMIN_PWD }`);
+  if (password == process.env.ADMIN_PWD) {
+    console.log('oui!')
+    const token = jwt.sign({ admin: `admin${ adminTokens.length + 1 }` }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
+    adminTokens.push(token);
+    return token;
+  } else {
+    console.log('non!')
+    return null;
+  }
+}
+
 export default { 
   registerPlayer,
   getPlayers,
   verifyToken,
   getPlayerByToken,
-  clearPlayers 
+  clearPlayers,
+  createAdmin
 };

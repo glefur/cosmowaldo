@@ -1,10 +1,10 @@
 import express from 'express';
-import playerService from '../services/player.service.js';
+import userService from '../services/user.service.js';
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  res.status(200).send(playerService.getPlayers());
+  res.status(200).send(userService.getPlayers());
 });
 
 router.post('/', (req, res) => {
@@ -13,7 +13,7 @@ router.post('/', (req, res) => {
     return res.status(400).send({ message: 'Name is required' });
   }
   try {
-    const player = playerService.registerPlayer(name);
+    const player = userService.registerPlayer(name);
     res.status(200).send(player);
   } catch (err) {
     res.status(500).send({ message: err.message });
