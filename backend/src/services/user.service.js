@@ -1,3 +1,4 @@
+// services/user.service.js
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
@@ -20,7 +21,6 @@ const registerPlayer = (name) => {
   } else {
     throw new Error('Game is not running, cannot register players.');
   }
-
 };
 
 const getPlayers = () => {
@@ -46,17 +46,17 @@ const getPlayerByToken = (token) => {
 
 const clearPlayers = () => {
   activePlayers = [];
-}
+};
 
 const createAdmin = (password) => {
-  if (password == process.env.ADMIN_PWD) {
-    const token = jwt.sign({ admin: `admin${ adminTokens.length + 1 }` }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
+  if (password === process.env.ADMIN_PWD) {
+    const token = jwt.sign({ admin: `admin${adminTokens.length + 1}` }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
     adminTokens.push(token);
     return token;
   } else {
     return null;
   }
-}
+};
 
 export default { 
   registerPlayer,
