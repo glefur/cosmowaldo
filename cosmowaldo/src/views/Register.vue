@@ -9,10 +9,10 @@
         label="Enter your player name"
         label-for="input-name"
         invalid-feedback="Please give a name"
-        :state="name !== null"
+        :state="name !== null && name !== ''"
         label-class="mb-1"
       >
-        <BFormInput id="input-name" v-model="name" :state="name !== null" trim />
+        <BFormInput id="input-name" v-model="name" :state="name !== null && name !== ''" trim />
       </BFormGroup>
       <BButton type="submit" variant="primary" style="display: block; margin:auto;">Submit</BButton>
     </BForm>
