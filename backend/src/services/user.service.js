@@ -49,14 +49,11 @@ const clearPlayers = () => {
 }
 
 const createAdmin = (password) => {
-  console.log(`${ password } == ${ process.env.ADMIN_PWD }`);
   if (password == process.env.ADMIN_PWD) {
-    console.log('oui!')
     const token = jwt.sign({ admin: `admin${ adminTokens.length + 1 }` }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
     adminTokens.push(token);
     return token;
   } else {
-    console.log('non!')
     return null;
   }
 }
