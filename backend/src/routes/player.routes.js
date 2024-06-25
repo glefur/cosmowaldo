@@ -1,9 +1,10 @@
 import express from 'express';
 import userService from '../services/user.service.js';
+import { isAdmin } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', isAdmin, (req, res) => {
   res.status(200).send(userService.getPlayers());
 });
 
