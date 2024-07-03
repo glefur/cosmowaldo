@@ -4,6 +4,8 @@ export default {
 
     players: async () => {
         const result = await api.get('/player');
+        console.log('Player API called. Result:');
+        console.log(result.data);
         return result.data;
     },
 

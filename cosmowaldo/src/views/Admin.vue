@@ -15,9 +15,7 @@
             <BRow class="flex-grow-1">
               <DashboardCard title="Players" class="h-100">
                 <ul>
-                  <li>Player 1</li>
-                  <li>Player 2</li>
-                  <li>Player 3</li>
+                  <li v-for="(player, index) in playerStore.players" :key="index">{{ player.name }}</li>
                 </ul>
               </DashboardCard>
             </BRow>
@@ -68,12 +66,15 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useGameSetStore } from '@/stores/gamesets';
+import { usePlayersStore } from '@/stores/players';
 import GameAPI from '@/api/game.api';
 import PasswordModal from '@/components/PasswordModal.vue';
 import DashboardCard from '@/components/DashboardCard.vue';
 
-const status = ref(null);
 const gameSetStore = useGameSetStore();
+const playerStore = usePlayersStore();
+
+const status = ref(null);
 const selectedGameSet = ref(null);
 const selectedStep = ref(null);
 const stepsActivated = ref([]);
@@ -111,17 +112,28 @@ const authenticated = () => {
   showPasswordModal.value = false;
 };
 
-onMounted(async () => {
+const refreshView = async () => {
   if (!showPasswordModal.value) {
     try {
       status.value = await GameAPI.status();
       await gameSetStore.fetchGameSets();
+      await playerStore.fetchPlayers();
     } catch (error) {
       console.error(error);
       status.value = false; // ou autre valeur par défaut
     }
   }
+}
+
+let intervalId = null;
+
+onMounted(async () => {
+  await refreshView();
+  intervalId = setInterval(refreshView, 1000);
 });
+
+
+
 </script>
 
 <style scoped>
