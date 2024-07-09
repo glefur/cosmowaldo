@@ -64,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useGameSetStore } from '@/stores/gamesets';
 import { usePlayersStore } from '@/stores/players';
 import GameAPI from '@/api/game.api';
@@ -81,30 +81,46 @@ const stepsActivated = ref([]);
 const showPasswordModal = ref(!localStorage.getItem('adminToken'));
 
 const start = async () => {
-  await GameAPI.start();
-  status.value = await GameAPI.status();
+  try {
+    await GameAPI.start();
+    status.value = await GameAPI.status();
+  } catch (error) {
+    handleAuthError(error);
+  }
 };
 
 const stop = async () => {
-  await GameAPI.stop();
-  status.value = await GameAPI.status();
-  if (!status.value) {
-    selectGameSet.value = null;
-    selectedStep.value = null;
-    stepsActivated.value = []; 
+  try {
+    await GameAPI.stop();
+    status.value = await GameAPI.status();
+    if (!status.value) {
+      selectedGameSet.value = null;
+      selectedStep.value = null;
+      stepsActivated.value = [];
+    }
+  } catch (error) {
+    handleAuthError(error);
   }
 };
 
 const selectGameSet = async (gameset) => {
-  await GameAPI.setActiveSet(gameset.name);
-  selectedGameSet.value = await GameAPI.activeSet();
-  stepsActivated.value = Array(gameset.steps.length).fill(false);
+  try {
+    await GameAPI.setActiveSet(gameset.name);
+    selectedGameSet.value = await GameAPI.activeSet();
+    stepsActivated.value = Array(gameset.steps.length).fill(false);
+  } catch (error) {
+    handleAuthError(error);
+  }
 };
 
 const activateStep = async (index) => {
-  if (stepsActivated.value[index]) {
-    await GameAPI.setActiveStep(index);
-    selectedStep.value = await GameAPI.activeStep();
+  try {
+    if (stepsActivated.value[index]) {
+      await GameAPI.setActiveStep(index);
+      selectedStep.value = await GameAPI.activeStep();
+    }
+  } catch (error) {
+    handleAuthError(error);
   }
 };
 
@@ -119,23 +135,40 @@ const refreshView = async () => {
       await gameSetStore.fetchGameSets();
       await playerStore.fetchPlayers();
     } catch (error) {
-      console.error(error);
-      status.value = false; // ou autre valeur par défaut
+      handleAuthError(error);
+      status.value = false;
     }
   }
 }
 
+const handleAuthError = (error) => {
+  if (error.response && error.response.status === 401) {
+    showPasswordModal.value = true;
+    localStorage.removeItem('adminToken');
+  } else {
+    console.error(error);
+  }
+}
+
+const showPasswordModalEventListener = () => {
+  showPasswordModal.value = true;
+};
+
 let intervalId = null;
 
 onMounted(async () => {
+  document.addEventListener('showPasswordModal', showPasswordModalEventListener);
   await refreshView();
   intervalId = setInterval(refreshView, 1000);
 });
 
-
-
+onUnmounted(() => {
+  document.removeEventListener('showPasswordModal', showPasswordModalEventListener);
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+});
 </script>
-
 <style scoped>
 .main-container {
   position: absolute;
