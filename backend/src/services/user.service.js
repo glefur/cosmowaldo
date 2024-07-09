@@ -12,12 +12,24 @@ let adminTokens = [];
 
 const registerPlayer = (name) => {
   if (gameService.running()) {
-    const player = new Player(name);
-    const token = jwt.sign({ name: player.getName() }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
-    player.setJwt(token);
-    
-    activePlayers.push(player);
-    return player;
+    const existingPlayer = activePlayers.find(player => player.getName() === name);
+
+    if (existingPlayer) {
+      const isValidToken = verifyToken(existingPlayer.getJwt());
+      if (isValidToken) {
+        return existingPlayer;
+      } else {
+        const newToken = jwt.sign({ name: existingPlayer.getName() }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
+        existingPlayer.setJwt(newToken);
+        return existingPlayer;
+      }
+    } else {
+      const newPlayer = new Player(name);
+      const newToken = jwt.sign({ name: newPlayer.getName() }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
+      newPlayer.setJwt(newToken);
+      activePlayers.push(newPlayer);
+      return newPlayer;
+    }
   } else {
     throw new Error('Game is not running, cannot register players.');
   }
