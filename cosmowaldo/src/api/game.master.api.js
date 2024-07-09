@@ -2,11 +2,6 @@ import api from "./api";
 
 export default {
 
-    status: async () => {
-        const result = await api.get('/admin/game/running');
-        return result.data.running;
-    },
-
     start: async () => {
         const result = await api.post('/admin/game/start');
         return;
@@ -19,16 +14,6 @@ export default {
 
     availableSets: async () => {
       const response = await api.get('/admin/game/availablesets');
-      return response.data;
-    },
-
-    activeSet: async () => {
-      const response = await api.get('/admin/game/activeSet');
-      return response.data;
-    },
-
-    activeStep: async () => {
-      const response = await api.get('/admin/game/activeStep');
       return response.data;
     },
 

@@ -102,7 +102,8 @@
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useGameSetStore } from '@/stores/gamesets';
 import { usePlayersStore } from '@/stores/players';
-import GameAPI from '@/api/game.api';
+import GameMasterAPI from '@/api/game.master.api';
+import GameRunAPI from '@/api/game.run.api';
 import PlayerAPI from '@/api/player.api';
 import PasswordModal from '@/components/PasswordModal.vue';
 import DashboardCard from '@/components/DashboardCard.vue';
@@ -118,8 +119,8 @@ const showPasswordModal = ref(!localStorage.getItem('adminToken'));
 
 const start = async () => {
   try {
-    await GameAPI.start();
-    status.value = await GameAPI.status();
+    await GameMasterAPI.start();
+    status.value = await GameRunAPI.status();
   } catch (error) {
     handleAuthError(error);
   }
@@ -127,8 +128,8 @@ const start = async () => {
 
 const stop = async () => {
   try {
-    await GameAPI.stop();
-    status.value = await GameAPI.status();
+    await GameMasterAPI.stop();
+    status.value = await GameRunAPI.status();
     if (!status.value) {
       selectedGameSet.value = null;
       selectedStep.value = null;
@@ -141,8 +142,8 @@ const stop = async () => {
 
 const selectGameSet = async (gameset) => {
   try {
-    await GameAPI.setActiveSet(gameset.name);
-    selectedGameSet.value = await GameAPI.activeSet();
+    await GameMasterAPI.setActiveSet(gameset.name);
+    selectedGameSet.value = await GameRunAPI.activeSet();
     stepsActivated.value = Array(gameset.steps.length).fill(false);
   } catch (error) {
     handleAuthError(error);
@@ -152,8 +153,8 @@ const selectGameSet = async (gameset) => {
 const activateStep = async (index) => {
   try {
     if (stepsActivated.value[index]) {
-      await GameAPI.setActiveStep(index);
-      selectedStep.value = await GameAPI.activeStep();
+      await GameMasterAPI.setActiveStep(index);
+      selectedStep.value = await GameRunAPI.activeStep();
     }
   } catch (error) {
     handleAuthError(error);
@@ -175,7 +176,7 @@ const authenticated = () => {
 const refreshView = async () => {
   if (!showPasswordModal.value) {
     try {
-      status.value = await GameAPI.status();
+      status.value = await GameRunAPI.status();
       await gameSetStore.fetchGameSets();
       await playerStore.fetchPlayers();
     } catch (error) {

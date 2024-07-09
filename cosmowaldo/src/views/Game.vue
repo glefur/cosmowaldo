@@ -10,7 +10,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import GameAPI from '@/api/game.api';
+import GameRunAPI from '@/api/game.run.api';
 import Scene from '@/components/Scene.vue';
 
 const gameStatus = ref({ running: false });
@@ -18,9 +18,9 @@ const activeStep = ref(null);
 
 const fetchGameStatus = async () => {
   try {
-    gameStatus.value.running = await GameAPI.status();
+    gameStatus.value.running = await GameRunAPI.status();
     if (gameStatus.value.running) {
-      activeStep.value = await GameAPI.activeStep();
+      activeStep.value = await GameRunAPI.activeStep();
     } else {
       activeStep.value = null;
     }

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import GameAPI from '@/api/game.api';
+import GameMasterAPI from '@/api/game.master.api';
 
 export const useGameSetStore = defineStore('gameset', {
   state: () => ({
@@ -9,7 +9,7 @@ export const useGameSetStore = defineStore('gameset', {
   actions: {
     async fetchGameSets() {
       try {
-        this.gamesets = await GameAPI.availableSets();
+        this.gamesets = await GameMasterAPI.availableSets();
       } catch (error) {
         console.error(error);
         this.gamesets = [];
