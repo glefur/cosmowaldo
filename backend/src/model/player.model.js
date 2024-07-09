@@ -14,6 +14,10 @@ class Player {
     return this.score;
   }
 
+  setScore(newScore) {
+    this.score = newScore;
+  }
+
   increaseScore(points) {
     this.score += points;
   }

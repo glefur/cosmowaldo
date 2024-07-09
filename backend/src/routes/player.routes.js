@@ -21,4 +21,20 @@ router.post('/', (req, res) => {
   }
 });
 
+router.post('/:name', isAdmin, (req, res) => {
+  const { name } = req.params;
+  const { score } = req.body;
+
+  if (typeof score !== 'number') {
+    return res.status(400).send({ message: 'Score must be a number.' });
+  }
+
+  try {
+    userService.setScore(name, score);
+    res.status(200).end();
+  } catch (error) {
+    res.status(404).send({ message: error.message });
+  }
+});
+
 export default router;

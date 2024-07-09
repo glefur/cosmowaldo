@@ -60,6 +60,15 @@ const clearPlayers = () => {
   activePlayers = [];
 };
 
+const setScore = (name, newScore) => {
+  const playerByName = activePlayers.find(p => p.name === name);
+  if (playerByName) {
+    playerByName.setScore(newScore);
+  } else {
+    throw new Error(`Player ${name} not found.`);
+  }
+};
+
 const createAdmin = (password) => {
   if (password === process.env.ADMIN_PWD) {
     const token = jwt.sign({ admin: `admin${adminTokens.length + 1}` }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRATION });
@@ -76,5 +85,6 @@ export default {
   verifyToken,
   getPlayerByToken,
   clearPlayers,
+  setScore,
   createAdmin
 };

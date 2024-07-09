@@ -14,4 +14,8 @@ export default {
         return result.data;
     },
 
+    updateScore: async (name, score) => {
+      await api.post(`/player/${name}`, { score });
+    },
+
 }

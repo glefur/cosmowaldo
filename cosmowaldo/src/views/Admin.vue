@@ -14,9 +14,44 @@
             </BRow>
             <BRow class="flex-grow-1">
               <DashboardCard title="Players" class="h-100">
-                <ul>
-                  <li v-for="(player, index) in playerStore.players" :key="index">{{ player.name }}</li>
-                </ul>
+                <BTableSimple striped hover>
+                  <BThead>
+                    <BTr>
+                      <BTh>Name</BTh>
+                      <BTh>Score</BTh>
+                    </BTr>
+                  </BThead>
+                  <BTbody>
+                    <BTr v-for="(player, index) in playerStore.players" :key="index">
+                      <BTd>{{ player.name }}</BTd>
+                      <BTd>
+                        <BFormInput
+                          type="number"
+                          v-model="player.score"
+                          @blur="updatePlayerScore(player)"
+                        />
+                      </BTd>
+                    </BTr>
+                  </BTbody>
+                  <!--thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(player, index) in playerStore.players" :key="index">
+                      <td>{{ player.name }}</td>
+                      <td>
+                        <BFormInput
+                          type="number"
+                          v-model="player.score"
+                          @blur="updatePlayerScore(player)"
+                        />
+                      </td>
+                    </tr>
+                  </tbody-->
+                </BTableSimple>
               </DashboardCard>
             </BRow>
           </BCol>
@@ -68,6 +103,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useGameSetStore } from '@/stores/gamesets';
 import { usePlayersStore } from '@/stores/players';
 import GameAPI from '@/api/game.api';
+import PlayerAPI from '@/api/player.api';
 import PasswordModal from '@/components/PasswordModal.vue';
 import DashboardCard from '@/components/DashboardCard.vue';
 
@@ -124,6 +160,14 @@ const activateStep = async (index) => {
   }
 };
 
+const updatePlayerScore = async (player) => {
+  try {
+    await PlayerAPI.updateScore(player.name, player.score);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const authenticated = () => {
   showPasswordModal.value = false;
 };
@@ -139,7 +183,7 @@ const refreshView = async () => {
       status.value = false;
     }
   }
-}
+};
 
 const handleAuthError = (error) => {
   if (error.response && error.response.status === 401) {
@@ -148,7 +192,7 @@ const handleAuthError = (error) => {
   } else {
     console.error(error);
   }
-}
+};
 
 const showPasswordModalEventListener = () => {
   showPasswordModal.value = true;
@@ -159,7 +203,7 @@ let intervalId = null;
 onMounted(async () => {
   document.addEventListener('showPasswordModal', showPasswordModalEventListener);
   await refreshView();
-  intervalId = setInterval(refreshView, 1000);
+  intervalId = setInterval(refreshView, 5000);
 });
 
 onUnmounted(() => {
@@ -169,6 +213,7 @@ onUnmounted(() => {
   }
 });
 </script>
+
 <style scoped>
 .main-container {
   position: absolute;
